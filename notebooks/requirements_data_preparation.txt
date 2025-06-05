@@ -1,0 +1,10 @@
+transformers==4.44.0
+torch
+accelerate
+huggingface_hub
+datasets
+tqdm
+trl==0.10.1
+scikit-learn
+pandas
+sentencepiece
