@@ -7,7 +7,7 @@
 This repository contains the code for our work on LLM routing strategies, including:
 
 - **[Hybrid LLM: Cost-Efficient and Quality-Aware Query Routing](https://arxiv.org/abs/2404.14618) (ICLR 2024)**
-- **BEST-Route: Adaptive LLM Routing with Test-Time Optimal Compute (ICML 2025)**.
+- **[BEST-Route: Adaptive LLM Routing with Test-Time Optimal Compute](https://arxiv.org/abs/2506.22716) (ICML 2025)**.
 
 <details>
 <summary>Motivation</summary>
@@ -170,5 +170,12 @@ If you find this work useful, please cite our papers:
   author={Ding, Dujian and Mallick, Ankur and Wang, Chi and Sim, Robert and Mukherjee, Subhabrata and Ruhle, Victor and Lakshmanan, Laks VS and Awadallah, Ahmed Hassan},
   booktitle={The Twelfth International Conference on Learning Representations},
   year={2024}
+}
+
+@inproceedings{dingbest,
+  title={BEST-Route: Adaptive LLM Routing with Test-Time Optimal Compute},
+  author={Ding, Dujian and Mallick, Ankur and Zhang, Shaokun and Wang, Chi and Madrigal, Daniel and Garcia, Mirian Del Carmen Hipolito and Xia, Menglin and Lakshmanan, Laks VS and Wu, Qingyun and R{\"u}hle, Victor},
+  booktitle={Forty-second International Conference on Machine Learning},
+  year={2025}
 }
 ```
