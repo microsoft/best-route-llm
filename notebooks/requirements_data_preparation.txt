@@ -1,4 +1,4 @@
-transformers==4.44.0
+transformers==5.0.0rc3
 torch
 accelerate
 huggingface_hub
