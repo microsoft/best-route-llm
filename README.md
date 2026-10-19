@@ -27,6 +27,7 @@ In **BEST-Route**, we aim to push envelope on the performance-cost trade-offs ac
 1. Python >= 3.9.
 2. Install the required packages for data preparation: ```pip install -r notebooks/requirements_data_preparation.txt```
 3. Install the required packages for router training and inference: ```pip install -r requirements.txt```
+   - PyTorch >= 2.6.0 is required for secure weights-only checkpoint loading.
 
 ### Dataset Mixing
 
@@ -119,6 +120,14 @@ In **BEST-Route**, we aim to push envelope on the performance-cost trade-offs ac
 ```
 
 ### Router Training
+
+Checkpoint loading with `--load_checkpoint` prefers `model.safetensors` over
+`pytorch_model.bin`. Binary weights are loaded on CPU with `weights_only=True`;
+checkpoints requiring arbitrary pickle objects are rejected without an unsafe
+fallback. The accompanying `config.bin` is also loaded with `weights_only=True`,
+allowlisting only this project's `NClassRankerConfig` to support existing saved
+router configurations. Invalid checkpoints fail explicitly; do not disable these
+restrictions to load untrusted files.
 
 1. Prepare the data for training the routers: ```run notebooks/data_preparation_hybridllm_mapping.ipynb``` and save the results to ```data/hybridllm_dataset_armoRM_ourRM_bo5_ALL_token_num_{SPLIT}.jsonl```
 2. Train **BEST-Route** routers

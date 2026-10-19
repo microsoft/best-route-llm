@@ -4,9 +4,10 @@
 import os
 import torch
 import logging
-import safetensors
+import safetensors.torch
 
 from typing import Dict, List
+from hybrid_llm.pair_ranker.config import NClassRankerConfig
 from hybrid_llm.pair_ranker.ranker import NClassReranker
 from llm_blender.pair_ranker.model_util import build_pretrained_model
 
@@ -37,6 +38,16 @@ def build_nclass_ranker(
     return NClassReranker(pretrained_model, config, tokenizer)
 
 
+def load_ranker_config(checkpoint_path: str) -> NClassRankerConfig:
+    """Load a checkpoint config without allowing arbitrary pickle globals."""
+    config_path = os.path.join(checkpoint_path, "config.bin")
+    with torch.serialization.safe_globals([NClassRankerConfig]):
+        config = torch.load(config_path, map_location="cpu", weights_only=True)
+    if not isinstance(config, NClassRankerConfig):
+        raise ValueError(f"Expected NClassRankerConfig in {config_path}")
+    return config
+
+
 def build_nclass_ranker_from_checkpoint(
     checkpoint_path: str, config, tokenizer
 ) -> NClassReranker:
@@ -52,7 +63,7 @@ def build_nclass_ranker_from_checkpoint(
         The built n-class ranker model.
 
     Raises:
-        Exception: If the pytorch_model.bin or model.safetensors file is not found in the checkpoint path.
+        FileNotFoundError: If neither checkpoint weights file exists.
         Exception: If there are missing keys in the loaded checkpoint.
     """
     logging.info(f"Loading model checkpoint from path {checkpoint_path}")
@@ -65,20 +76,18 @@ def build_nclass_ranker_from_checkpoint(
         tokenizer,
     )
 
-    model_path = os.path.join(checkpoint_path, "pytorch_model.bin")
-    if os.path.exists(model_path):
-        logging.info(f"Loading pickle checkpoint from path {model_path}")
-        state_dict = torch.load(model_path)
-
     model_path = os.path.join(checkpoint_path, "model.safetensors")
     if os.path.exists(model_path):
         logging.info(f"Loading safetensors checkpoint from path {model_path}")
         state_dict = safetensors.torch.load_file(model_path, device="cpu")
-
-    if not state_dict:
-        raise Exception(
-            f"pytorch_model.bin or model.safetensors file not found in path: {checkpoint_path}"
-        )
+    else:
+        model_path = os.path.join(checkpoint_path, "pytorch_model.bin")
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(
+                f"pytorch_model.bin or model.safetensors file not found in path: {checkpoint_path}"
+            )
+        logging.info(f"Loading weights-only checkpoint from path {model_path}")
+        state_dict = torch.load(model_path, map_location="cpu", weights_only=True)
 
     load_result = model.load_state_dict(state_dict, strict=False)
     if load_result.missing_keys:

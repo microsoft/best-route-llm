@@ -1,2 +1,3 @@
 py-cpuinfo
+torch>=2.6.0
 llm-blender[example,train,data,eval] @ git+https://github.com/yuchenlin/LLM-Blender.git#egg=LLM-Blender

@@ -19,6 +19,7 @@ from hybrid_llm.pair_ranker.trainer import (compute_metrics_for_prob_2class, com
 from hybrid_llm.pair_ranker.model_util import (
     build_nclass_ranker,
     build_nclass_ranker_from_checkpoint,
+    load_ranker_config,
 )
 
 from llm_blender.pair_ranker.model_util import build_tokenizer
@@ -93,7 +94,7 @@ def initialize_model(args, tokenizer: PreTrainedTokenizer) -> NClassReranker:
         {k: v for k, v in args.__dict__.items() if k in config.__dict__})
 
     if args.load_checkpoint:
-        config = torch.load(os.path.join(args.load_checkpoint, "config.bin"))
+        config = load_ranker_config(args.load_checkpoint)
         model = build_nclass_ranker_from_checkpoint(
             args.load_checkpoint, config, tokenizer
         )
